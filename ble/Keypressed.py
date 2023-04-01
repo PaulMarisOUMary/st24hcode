@@ -1,9 +1,13 @@
 from pynput import keyboard
+import machine
+import neopixel
 
 
 def keypressed(key):
     if key == keyboard.Key.space:     
         print('space pressed')
+        machine.pin(D0).neopixel(red)
+        machine.pin(D1).neopixel(red)
     elif key == keyboard.Key.up:
         print('up pressed')
     elif key == keyboard.Key.down:      
