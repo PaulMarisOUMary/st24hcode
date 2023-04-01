@@ -1,4 +1,3 @@
-#
 # UDP MultiCast part greatly inspired from
 # https://stackoverflow.com/questions/603852/how-do-you-udp-multicast-in-python#1794373
 #
