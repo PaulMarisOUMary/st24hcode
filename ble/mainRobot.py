@@ -11,7 +11,7 @@ import RobotBleServer
 # In order not to connect on a wrong robot, you shall change this name;
 # other teams shall not use same name.
 # On PC side, you shall also use this new name for robot you will search for in advertising
-robotName = 'myTeamName'
+robotName = 'PLP_QG_LPL-robot'
 
 toSend = []
 
