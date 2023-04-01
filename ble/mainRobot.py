@@ -3,7 +3,7 @@
 
 # in this example, robot will send back to PC all messages received
 # Note: message from robot to PC shall not exceed 18 characters
-
+import machine
 import uasyncio as asyncio
 import RobotBleServer
 
@@ -11,7 +11,7 @@ import RobotBleServer
 # In order not to connect on a wrong robot, you shall change this name;
 # other teams shall not use same name.
 # On PC side, you shall also use this new name for robot you will search for in advertising
-robotName = 'PLP_QG_LPL-robot'
+robotName = 'PLPQGLPL'
 
 toSend = []
 
@@ -38,7 +38,7 @@ async def robotMainTask(bleConnection):
 # Run tasks
 async def main():
 	print('Start main')
-	bleConnection = RobotBleServer.RobotBleServer(robotName=robotName, onMsgReceived=onMsgToRobot)
+	bleConnection = RobotBleServer.RobotBleServer(robotName='PLPQGLPL', onMsgReceived=onMsgToRobot)
 	asyncio.create_task(robotMainTask(bleConnection))
 	await bleConnection.communicationTask()
 

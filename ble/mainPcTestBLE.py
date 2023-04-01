@@ -17,7 +17,7 @@ import ComWithDongle
 # In order not to connect on a wrong robot, you shall change this name;
 # other teams shall not use same name.
 # On robot side, you shall also use this new name for robot to send in advertising
-robotName = "PLP_QG_LPL-robot"
+robotName = "PLPQGLPL"
 
 randCharRange = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
