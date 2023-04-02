@@ -72,15 +72,6 @@ try:
 		if keyboard.is_pressed('space'):
 			data += 's'
 			print('space')
-		if keyboard.is_pressed('0'):
-			data += '0'
-			print('0')
-		if keyboard.is_pressed('1'):
-			data += '1'
-			print('1')
-		if keyboard.is_pressed('2'):
-			data += '2'
-			print('2')
 
 
 		com.sendMsg(data)
