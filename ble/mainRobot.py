@@ -1,45 +1,93 @@
-# to know COM port used when connected on PC:
-# python -m serial.tools.list_ports
-
-# in this example, robot will send back to PC all messages received
-# Note: message from robot to PC shall not exceed 18 characters
 import machine
+from stm32_alphabot_v2 import AlphaBot_v2
+from stm32_ssd1306 import SSD1306, SSD1306_I2C
+import neopixel
+
+alphabot = AlphaBot_v2()
+oled = SSD1306_I2C(128, 64, alphabot.i2c, addr=alphabot.getOLEDaddr())
+
+d0 = machine.Pin('D0', machine.Pin.OUT)
+d1 = machine.Pin('D1', machine.Pin.OUT)
+
+npAlphabot0 = neopixel.NeoPixel(d0, 4)
+npAlphabot1 = neopixel.NeoPixel(d1, 4)
+
+# npAlphabot0[0] = (255, 0, 0)
+# npAlphabot0.write()
+# npAlphabot1[0] = (255, 0, 0)
+# npAlphabot1.write()
+
+# for i in range(4):
+#     npAlphabot0[i] = (0, 0, 0)
+#     npAlphabot1[i] = (0, 0, 0)
+#     npAlphabot0.write()
+#     npAlphabot1.write()
+        
+ledsOn = False
+
 import uasyncio as asyncio
 import RobotBleServer
 
-# This is the name your robot will use in advertising.
-# In order not to connect on a wrong robot, you shall change this name;
-# other teams shall not use same name.
-# On PC side, you shall also use this new name for robot you will search for in advertising
 robotName = 'PLPQGLPL'
 
-toSend = []
-
 def onMsgToRobot(data:str):
-	"""Function to call when a message sent by PC is received
-	:param data: message received"""
-	#print('msg', data)
-	toSend.append(data)
+  # oled.text(data, 0, 0)
+  # oled.show()
+
+    ls = 0
+    rs = 0
+
+    if('u' in data):
+        ls += 50
+        rs += 100
+    if('d' in data):
+        ls -= 50
+        rs -= 100
+    if('l' in data):
+        ls *= 0.5
+        if(ls==0): 
+            ls=-20
+            rs=50
+    if('r' in data):
+        rs *= 0.5
+        if(rs==0): 
+            ls=20
+            rs=-50
+
+    if('s' in data):
+        # oled.text(ledsOn, 0, 0)
+        # oled.show()
+
+        # ledsOn = not ledsOn
+        
+        if(npAlphabot0[0][0] == 255):
+            npAlphabot0[0] = (0, 0, 0)
+            npAlphabot0.write()
+            npAlphabot1[0] = (0, 0, 0)
+            npAlphabot1.write()
+        else:
+            npAlphabot0[0] = (255, 0, 0)
+            npAlphabot0.write()
+            npAlphabot1[0] = (255, 0, 0)
+            npAlphabot1.write()
+
+    alphabot.setMotorLeft(ls)
+    alphabot.setMotorRight(rs)
+
 
 async def robotMainTask(bleConnection):
-	"""Main function for robot activities
-	:param bleConnection: object to check BLE connection and send messages"""
-	while True:
-		await asyncio.sleep(0.1)
-		if not bleConnection.connection: continue
-		# BLE connection is established, we can send messages to PC
-		if toSend == []: continue
-		while not toSend == []:
-			data = toSend.pop(0)
-			#print('send', data)
-			bleConnection.sendMessage(data)
-			print('sent', data)
+    """Main function for robot activities
+    :param bleConnection: object to check BLE connection and send messages"""
+    while True:
+        await asyncio.sleep(0.1)
+        if not bleConnection.connection: continue
+
 
 # Run tasks
 async def main():
-	print('Start main')
-	bleConnection = RobotBleServer.RobotBleServer(robotName='PLPQGLPL', onMsgReceived=onMsgToRobot)
-	asyncio.create_task(robotMainTask(bleConnection))
-	await bleConnection.communicationTask()
+    print('Start main')
+    bleConnection = RobotBleServer.RobotBleServer(robotName=robotName, onMsgReceived=onMsgToRobot)
+    asyncio.create_task(robotMainTask(bleConnection))
+    await bleConnection.communicationTask()
 
 asyncio.run(main())

@@ -10,8 +10,9 @@
 import sys
 import time
 import argparse
-import random
 import ComWithDongle
+import keyboard
+
 
 # This is the name your PC will search for, in advertising.
 # In order not to connect on a wrong robot, you shall change this name;
@@ -48,49 +49,42 @@ args = parser.parse_args()
 
 try:
 	print('start main')
-	# wait BLE connection is established
 	com = ComWithDongle.ComWithDongle(comPort=args.portcom, peripheralName=robotName,
 		onMsgReceived=onMsgFromRobot, debug=args.debug)
 	print('connected to', robotName)
-	msgId = 0
 	while True:
-		data = ''.join([random.choice(randCharRange) for _ in range(args.length)])
-		print('send data', len(data), msgId, data, flush=True)
-		recentlySent.append(data)
+		# car_status, position, orientation, x, y, race_status, counter, timestamp_ns = getRaceData()
+		# left, right, yaw = PIDControler(orientation, yaw)
+
+		data = 'n' #''.join([random.choice(randCharRange) for _ in range(args.length)])
+		if keyboard.is_pressed('down arrow'):
+			data += 'u'
+			print('u')
+		if keyboard.is_pressed('up arrow'):
+			data += 'd'
+			print('d')
+		if keyboard.is_pressed('left arrow'):
+			data += 'l'
+			print('l')
+		if keyboard.is_pressed('right arrow'):
+			data += 'r'
+			print('r')
+		if keyboard.is_pressed('space'):
+			data += 's'
+			print('space')
+
+
 		com.sendMsg(data)
-		msgId += 1
-		if msgId >= args.number: break
+
 		time.sleep(0.01)
-	#all messages sent, wait while we receive some messages
-	nbMissing = len(recentlySent)
-	lastNbMissing = 0
-	while not nbMissing == lastNbMissing:
-		time.sleep(2)
-		print('missing', recentlySent, flush=True)
-		lastNbMissing = nbMissing
 		nbMissing = len(recentlySent)
+		lastNbMissing = 0
+		while not nbMissing == lastNbMissing:
+			time.sleep(2)
+			print('missing', recentlySent, flush=True)
+			lastNbMissing = nbMissing
+			nbMissing = len(recentlySent)
 except KeyboardInterrupt:
 	pass
 com.disconnect()
 exit(0)
-
-def keypressed(key):
-    if key == keyboard.Key.space:     
-        print('space pressed')
-        machine.pin(D0).neopixel(red)
-        machine.pin(D1).neopixel(red)
-    elif key == keyboard.Key.up:
-        print('up pressed')
-    elif key == keyboard.Key.down:      
-        print('down pressed')
-    elif key == keyboard.Key.left:
-        print('left pressed')
-    elif key == keyboard.Key.right:
-        print('right pressed')
-    elif key == keyboard.Key.esc:
-        print('Escape')
-        listener.stop() 
-
-listener = keyboard.Listener(on_press=keypressed)
-listener.start()
-listener.join()
