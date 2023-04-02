@@ -53,6 +53,15 @@ def onMsgToRobot(data:str):
         if(rs==0): 
             ls=20
             rs=-50
+	if('0' in data):
+		ls = 0
+		rs = 0
+	if('1' in data):
+		ls = 40
+		rs = 40
+	if ('2' in data):
+		ls = 20
+		rs = 20
 
     if('s' in data):
         # oled.text(ledsOn, 0, 0)
